@@ -5,11 +5,8 @@
     <h1>Mon beau gâteau</h1>
     {{ cake.name }} - {{ cake.price }}€
     <figure>
-        <img src="{{ cake.image }}" alt="{{ cake.description }}">
+        <img src="{{ cake.image }}" alt="Cake picture">
         <figcaption>{{ cake.description }}</figcaption>
     </figure>
 </div>
-<pre>
-    {{ dump(cake) }}
-</pre>
 {% endblock %}
