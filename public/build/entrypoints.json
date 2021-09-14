@@ -1,0 +1,12 @@
+{
+  "entrypoints": {
+    "style/cake.min": {
+      "js": [
+        "/build/runtime.js"
+      ],
+      "css": [
+        "/build/style/cake.min.css"
+      ]
+    }
+  }
+}

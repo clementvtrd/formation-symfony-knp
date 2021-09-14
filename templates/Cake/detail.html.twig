@@ -1,0 +1,15 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="cake">
+    <h1>Mon beau gâteau</h1>
+    {{ cake.name }} - {{ cake.price }}€
+    <figure>
+        <img src="{{ cake.image }}" alt="{{ cake.description }}">
+        <figcaption>{{ cake.description }}</figcaption>
+    </figure>
+</div>
+<pre>
+    {{ dump(cake) }}
+</pre>
+{% endblock %}

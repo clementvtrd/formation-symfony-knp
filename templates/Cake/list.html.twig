@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+{% if app.session.flashbag.peekAll %}
+    <div id="flashbag-container">
+        {% for name, messages in app.session.flashbag.all %}
+            {% for message in messages %}
+                <div class="alert {{ name }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<div id="container">
+    <section class="container">
+        <h3>Cakes list</h3>
+        <div class="row">
+            {% for cake in cakes %}
+            <div class="col-sm-3">
+                <a href="{{ path('app_cake', {id : cake.id}) }}">{{ cake.name }}</a>                           
+                 <article class="card">
+                    <img class="card-img-top" src="{{ cake.image }}" alt="{{ cake.name }}" style="height:300px">
+                        <div class="card-body">
+                            <p class="card-text">{{ cake.name }} - {{ cake.price }} €</p>
+                        </div>
+                 </article>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

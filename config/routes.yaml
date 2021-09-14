@@ -1,0 +1,14 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+app_cake_list:
+  path: /cakes
+  controller: App\Controller\CakeController::list
+
+app_cake:
+  path: /cake/{id}
+  controller: App\Controller\CakeController::show
+
+app_cake_create:
+  path: /cakes/create
+  controller: App\Controller\CakeController::create
