@@ -10,24 +10,25 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CakeController extends AbstractController
 {
-    public function __construct(Convertor $convertor, ContainerInterface $container)
+    protected Convertor $convertor;
+
+    public function __construct(Convertor $convertor)
     {
         $this->convertor = $convertor;
-        $this->container = $container;
     }
 
     public function list(): Response
     {
-       $cakes = $this->container->get('doctrine')
+       $cakes = $this->getDoctrine()
            ->getRepository(Cake::class)
            ->findAll();
         
-        return $this->container->get('twig')->render('cake/list.html.twig',
+        return $this->render('cake/list.html.twig',
         [
             'cakes' => $cakes,
             'convertor' => $this->convertor
@@ -36,7 +37,7 @@ class CakeController extends AbstractController
 
     public function show(int $id)
     {
-        $cake = $this->get('doctrine')
+        $cake = $this->getDoctrine()
             ->getRepository(Cake::class)
             ->find($id);
 
@@ -47,7 +48,7 @@ class CakeController extends AbstractController
             throw new NotFoundHttpException('cake not found for the given id');
         }
 
-        return $this->container->get('twig')->render('cake/detail.html.twig',
+        return $this->render('cake/detail.html.twig',
         [
             'cake' => $cake
         ]);
@@ -65,14 +66,16 @@ class CakeController extends AbstractController
             $em = $this->getDoctrine()->getManager();
             $cake = $form->getData();
             $validator = new CakeValidator();
+            /**
+             * @var Session $session
+             */
+            $session = $request->getSession();
             if ($validator->checkName($cake->getName())) {
                 $em->persist($cake);
                 $em->flush();
-                $session = $request->getSession();
                 $session->getFlashBag()->add('success', 'Bravo !');
                 return $this->redirectToRoute('app_cake_list');
             } else {
-                $session = $request->getSession();
                 $session->getFlashBag()->add('error', 'Quelque chose ne va pas.');
             }
         }
