@@ -22,10 +22,9 @@
             <div class="col-sm-3">
                 <a href="{{ path('app_cake', {id : cake.id}) }}">{{ cake.name }}</a>                           
                  <article class="card">
-                    <img class="card-img-top" src="{{ cake.image }}" alt="{{ cake.name }}" style="height:300px">
-                        <div class="card-body">
-                            <p class="card-text">{{ cake.name }} - {{ cake.price }} €</p>
-                        </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ cake.name }} - {{ cake.price }} €</p>
+                    </div>
                  </article>
                 </a>
             </div>

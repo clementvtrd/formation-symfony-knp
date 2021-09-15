@@ -12,3 +12,15 @@ app_cake:
 app_cake_create:
   path: /cakes/create
   controller: App\Controller\CakeController::create
+
+search_cake:
+  path: /cakes/search
+  controller: App\Controller\CakeController::search
+
+app_login:
+  path: /login
+  controller: App\Controller\SecurityController::login
+
+app_logout:
+  path: /logout
+  controller: App\Controller\SecurityController::logout

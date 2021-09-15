@@ -2,12 +2,14 @@
 
 namespace App\Forms\Types;
 
+use App\Entity\Cake;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CakeType extends AbstractType
@@ -34,18 +36,15 @@ class CakeType extends AbstractType
          ])
          ->add("price", MoneyType::class, [
              "constraints" => [
-                 new Assert\Currency()
-             ]
-         ])
-         ->add("image", FileType::class, [
-             "required" => false,
-             "constraints" => [
-                 new Assert\AtLeastOneOf([
-                     new Assert\Image(),
-                     new Assert\Url()
-                 ])
+                 new Assert\GreaterThanOrEqual(0)
              ]
          ])
          ->add("submit", SubmitType::class);
+ }
+ public function configureOptions(OptionsResolver $resolver)
+ {
+     $resolver->setDefaults([
+         "data_class" => Cake::class
+     ]);
  }
 }

@@ -19,13 +19,39 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href={{ path('app_cake_create') }}>Create cake</a>                           
+                    <a class="nav-link" href={{ path('app_cake_create') }}>
+                        {% trans from "base" %}Add a cake{% endtrans %}
+                    </a>
                 </li>
             </ul>
-            <form class="form-inline my-2 my-lg-0">
-              <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <form method="post" action="{{ path("search_cake") }}" class="form-inline my-2 my-lg-0">
+              <input
+                name="search"
+                class="form-control mr-sm-2"
+                type="text"
+                placeholder="{% trans from "base" %}Brownie...{% endtrans %}"
+                aria-label="Search">
+              <input
+                class="btn btn-outline-success my-2 my-sm-0" type="submit"
+                value="{% trans from "base" %}Search{% endtrans %}"
+              />
             </form>
+          </div>
+          <div class="align-right">
+              {% if app.user %}
+                  {{ app.user.email }}
+                  <a href="{{ path("app_logout") }}" class="btn btn-danger">
+                      {% trans from "base" %}
+                          Sign out
+                      {% endtrans %}
+                  </a>
+              {% else %}
+                  <a href="{{ path("app_login") }}" class="btn btn-success">
+                      {% trans from "base" %}
+                          Sign in
+                      {% endtrans %}
+                  </a>
+              {% endif %}
           </div>
         </nav>
         {% endblock %}

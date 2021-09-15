@@ -1,0 +1,9 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+<div class="cake">
+    <h1>Mon beau gâteau</h1>
+    <h2>{{ cake.name }} - {{ cake.price }}€</h2>
+    <p>{{ cake.description }}</p>
+</div>
+{% endblock %}

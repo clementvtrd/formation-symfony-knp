@@ -2,61 +2,57 @@
 
 namespace App\Controller;
 
+use App\Entity\Cake;
 use App\Forms\Types\CakeType;
 use Exception;
 use PDOException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CakeController extends AbstractController
 {
-    private $pdo;
-
-    public function list() 
+    public function list(): Response
     {
-       $cakes = $this->getPdo()
-            ->query('SELECT * FROM cake ORDER BY created_at DESC')
-            ->fetchALl()
-        ;
+       $cakes = $this->getDoctrine()
+           ->getRepository(Cake::class)
+           ->findAll();
         
-        return $this->render('Cake/list.html.twig', [
+        return $this->render('cake/list.html.twig', [
             'cakes' => $cakes,
         ]);
     }
 
-    public function show($id)
+    public function show(int $id): Response
     {
-
-        $sql = 'SELECT * FROM cake WHERE id = :id';
-
-        $sth = $this->getPdo()->prepare($sql);
-        $sth->execute([':id' => $id]);
-        $cake = $sth->fetch();
+        $cake = $this->getDoctrine()
+            ->getRepository(Cake::class)
+            ->find($id);
 
         if ($cake === false) {
-            throw new NotFoundHttpException('Cake not found for the given id');
+            throw new NotFoundHttpException('cake not found for the given id');
         }
 
-        return $this->render('Cake/detail.html.twig', [
+        return $this->render('cake/detail.html.twig', [
             'cake' => $cake
         ]);
     }
 
-    public function create(Request $request) 
+    /**
+     * @throws Exception
+     */
+    public function create(Request $request): Response
     {
-        $form = $this->createForm(CakeType::class);
-
+        $form = $this->createForm(CakeType::class, new Cake());
         $form->handleRequest($request);
 
-        if ($form->isSubmitted()) {
-            $data = $form->getData();
-
-            $sql = "INSERT INTO cake (name, description, price, created_at, image) VALUES (?,?,?,?,?)";
-
+        if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $stmt= $this->getPdo()->prepare($sql);
-                $stmt->execute([$data["name"], $data["description"], $data["price"], $data["image"], time()]);
+                $em = $this->getDoctrine()->getManager();
+                $cake = $form->getData();
+                $em->persist($cake);
+                $em->flush();
             } catch(PDOException $e) {
                 throw new Exception('PDO failed ' . $e);
             }
@@ -68,17 +64,21 @@ class CakeController extends AbstractController
             return $this->redirectToRoute('app_cake_list');
         }
 
-        return $this->render('Cake/create.html.twig', [
+        return $this->render('cake/create.html.twig', [
             'form' => $form->createView()
         ]);
     }
 
-    private function getPdo() 
+    public function search(Request $request): Response
     {
-        if (null === $this->pdo) {
-            $this->pdo = new \PDO($this->getParameter('database'));
-        }
+        $cakes = $this->getDoctrine()
+            ->getRepository(Cake::class)
+            ->findBy([
+                "name" => $request->request->get("search")
+            ]);
 
-        return $this->pdo;
-    } 
+        return $this->render('cake/list.html.twig', [
+            'cakes' => $cakes,
+        ]);
+    }
 }
