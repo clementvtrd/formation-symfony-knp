@@ -10,41 +10,45 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CakeController extends AbstractController
 {
-    public function __construct(Convertor $convertor)
+    public function __construct(Convertor $convertor, ContainerInterface $container)
     {
         $this->convertor = $convertor;
+        $this->container = $container;
     }
 
     public function list(): Response
     {
-       $cakes = $this->getDoctrine()
+       $cakes = $this->container->get('doctrine')
            ->getRepository(Cake::class)
            ->findAll();
         
-        return $this->render('cake/list.html.twig', [
+        return $this->container->get('twig')->render('cake/list.html.twig',
+        [
             'cakes' => $cakes,
             'convertor' => $this->convertor
         ]);
     }
 
-    public function show(int $id): Response
+    public function show(int $id)
     {
-        $cake = $this->getDoctrine()
+        $cake = $this->get('doctrine')
             ->getRepository(Cake::class)
             ->find($id);
 
-    /**
-     * no number and no special char
-     */
-        if ($cake === false) {
+        /**
+         * no number and no special char
+         */
+        if (!$cake instanceof Cake) {
             throw new NotFoundHttpException('cake not found for the given id');
         }
 
-        return $this->render('cake/detail.html.twig', [
+        return $this->container->get('twig')->render('cake/detail.html.twig',
+        [
             'cake' => $cake
         ]);
     }
