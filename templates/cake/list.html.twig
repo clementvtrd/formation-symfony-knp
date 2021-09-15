@@ -2,18 +2,6 @@
 
 {% block body %}
 
-{% if app.session.flashbag.peekAll %}
-    <div id="flashbag-container">
-        {% for name, messages in app.session.flashbag.all %}
-            {% for message in messages %}
-                <div class="alert {{ name }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endfor %}
-    </div>
-{% endif %}
-
 <div id="container">
     <section class="container">
         <h3>Cakes list</h3>
@@ -23,7 +11,7 @@
                 <a href="{{ path('app_cake', {id : cake.id}) }}">{{ cake.name }}</a>                           
                  <article class="card">
                     <div class="card-body">
-                        <p class="card-text">{{ cake.name }} - {{ cake.price }} €</p>
+                        <p class="card-text">{{ cake.name }} - {{ cake.price }} € (${{ convertor.euroToDollar(cake.price) }})</p>
                     </div>
                  </article>
                 </a>

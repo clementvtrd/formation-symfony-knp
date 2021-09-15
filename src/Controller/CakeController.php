@@ -2,10 +2,11 @@
 
 namespace App\Controller;
 
+use App\Domain\Currency\Convertor;
+use App\Domain\Validators\CakeValidator;
 use App\Entity\Cake;
 use App\Forms\Types\CakeType;
 use Exception;
-use PDOException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,6 +14,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CakeController extends AbstractController
 {
+    public function __construct(Convertor $convertor)
+    {
+        $this->convertor = $convertor;
+    }
+
     public function list(): Response
     {
        $cakes = $this->getDoctrine()
@@ -21,6 +27,7 @@ class CakeController extends AbstractController
         
         return $this->render('cake/list.html.twig', [
             'cakes' => $cakes,
+            'convertor' => $this->convertor
         ]);
     }
 
@@ -30,6 +37,9 @@ class CakeController extends AbstractController
             ->getRepository(Cake::class)
             ->find($id);
 
+    /**
+     * no number and no special char
+     */
         if ($cake === false) {
             throw new NotFoundHttpException('cake not found for the given id');
         }
@@ -48,20 +58,19 @@ class CakeController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $em = $this->getDoctrine()->getManager();
-                $cake = $form->getData();
+            $em = $this->getDoctrine()->getManager();
+            $cake = $form->getData();
+            $validator = new CakeValidator();
+            if ($validator->checkName($cake->getName())) {
                 $em->persist($cake);
                 $em->flush();
-            } catch(PDOException $e) {
-                throw new Exception('PDO failed ' . $e);
+                $session = $request->getSession();
+                $session->getFlashBag()->add('success', 'Bravo !');
+                return $this->redirectToRoute('app_cake_list');
+            } else {
+                $session = $request->getSession();
+                $session->getFlashBag()->add('error', 'Quelque chose ne va pas.');
             }
-
-            $session = $request->getSession();
-
-            $session->getFlashBag()->add('success', 'Bravo !');
-
-            return $this->redirectToRoute('app_cake_list');
         }
 
         return $this->render('cake/create.html.twig', [
